@@ -14,7 +14,7 @@
       lineinfile:
         dest: /etc/salt/minion
         insertafter: "id:"
-        line: "master: 10.196.14.19"
+        line: "master: 0.0.0.0"
     - name: yum centos7 config
       lineinfile:
         dest: /etc/salt/minion
