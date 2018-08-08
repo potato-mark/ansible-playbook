@@ -1,0 +1,18 @@
+#安装zabbix和nagios并启动
+- name: zabbix nagios
+  hosts: add-servers
+  user: root
+  gather_facts: True
+  tasks:
+    - name: zabbix install
+      script: /app/zabbix_setup.sh
+    - name: modify config
+      lineinfile:
+        dest: /etc/zabbix/zabbix_agentd.conf
+        regexp: "Hostname="
+        line: "Hostname={{ansible_default_ipv4.address}}"
+      notify:
+       - start zabbix-agent
+  handlers: 
+    - name: start zabbix-agent
+      service: name=zabbix-agent state=started enabled=yes

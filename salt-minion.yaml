@@ -1,0 +1,24 @@
+#根据不同的系统添加不同的本地yum源，并且安装salt客户端
+- name: yum salt-minion
+  hosts: add-servers
+  user: root
+  gather_facts: True
+  tasks:
+    - name: yum salt-minion 6
+      yum: name=salt-minion state=present
+      when: ansible_distribution_major_version == "6"  #判断系统是6还是7
+    - name: yum salt-minion 7
+      yum: name=salt-minion state=present
+      when: ansible_distribution_major_version == "7"  #判断系统是6还是7
+    - name: yum centos7 config
+      lineinfile:
+        dest: /etc/salt/minion
+        insertafter: "id:"
+        line: "master: 10.196.14.19"
+    - name: yum centos7 config
+      lineinfile:
+        dest: /etc/salt/minion
+        insertafter: "id:"
+        line: "id: {{ansible_default_ipv4.address}}"
+    - name: start salt-minion
+      service: name=salt-minion state=started enabled=yes

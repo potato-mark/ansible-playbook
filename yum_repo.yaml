@@ -1,0 +1,24 @@
+#根据不同的系统添加不同的本地yum源，并且安装salt客户端
+- name: yum repo
+  hosts: add-servers
+  user: root
+  gather_facts: True
+  tasks:
+    - name: yum centos7 config
+      script: /app/init7.sh
+      when: ansible_distribution_major_version == "7"  #判断系统是6还是7
+    - name: yum centos6 config
+      script: /app/init6.sh
+      when: ansible_distribution_major_version == "6"
+    - name: yum  clean all
+      shell: yum clean all
+    - name: install items    #自定义id
+      yum: name={{item}} state=present   #安装items的包present安装,卸载 state=absent remove=yes
+      with_items:
+        - lrzsz
+        - telnet
+        - vim
+        - gcc
+        - wget
+        - curl
+        - ntpdate

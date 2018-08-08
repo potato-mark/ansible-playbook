@@ -1,0 +1,22 @@
+#安装zabbix和nagios并启动
+- name: install nagios
+  hosts: add-servers
+  user: root
+  gather_facts: True
+  tasks:
+    - name: add group
+      group: name=nagios
+    - name: add user
+      user: name=nagios password=  groups=nagios
+    - name: push 6 files
+      copy: "src=/app/nagios_client6.tar.gz dest=/app/ owner=root group=root mode=0755"
+      when: ansible_distribution_major_version == "6"
+    - name: push 7 files
+      copy: "src=/app/nagios_client7.tar.gz dest=/app/ owner=root group=root mode=0755"
+      when: ansible_distribution_major_version == "7"
+    - name: start 6 nagios
+      shell: cd /app;tar zxvf /app/nagios_client6.tar.gz;ln -sf /usr/lib64/libssl.so.10 /usr/lib64/libssl.so.6;ln -sf /usr/lib64/libcrypto.so.10 /usr/lib64/libcrypto.so.6;/app/nagios/bin/nrpe -c /app/nagios/etc/nrpe.cfg -d
+      when: ansible_distribution_major_version == "6"
+    - name: start 7 nagios
+      shell: cd /app;tar zxvf /app/nagios_client7.tar.gz;ln -sf /usr/lib64/libssl.so.10 /usr/lib64/libssl.so.6;ln -sf /usr/lib64/libcrypto.so.10 /usr/lib64/libcrypto.so.6;/app/nagios/bin/nrpe -c /app/nagios/etc/nrpe.cfg -d
+      when: ansible_distribution_major_version == "7"
